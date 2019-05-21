@@ -1,0 +1,41 @@
+# Copyright 2001-2018 Sourcefire, Inc. All Rights Reserved.
+#
+# This file contains (i) proprietary rules that were created, tested and certified by
+# Sourcefire, Inc. (the "VRT Certified Rules") that are distributed under the VRT
+# Certified Rules License Agreement (v 2.0), and (ii) rules that were created by
+# Sourcefire and other third parties (the "GPL Rules") that are distributed under the
+# GNU General Public License (GPL), v2.
+# 
+# The VRT Certified Rules are owned by Sourcefire, Inc. The GPL Rules were created
+# by Sourcefire and other third parties. The GPL Rules created by Sourcefire are
+# owned by Sourcefire, Inc., and the GPL Rules not created by Sourcefire are owned by
+# their respective creators. Please see http://www.snort.org/snort/snort-team/ for a
+# list of third party owners and their respective copyrights.
+# 
+# In order to determine what rules are VRT Certified Rules or GPL Rules, please refer
+# to the VRT Certified Rules License Agreement (v2.0).
+#
+#-------------
+# LOCAL RULES
+#-------------
+
+alert icmp any any -> $HOME_NET any (msg: "ICMP detected"; GID:10000001; sid:434; rev:001; classtype:icmp-event;)
+
+alert tcp $EXTERNAL_NET any -> $HOME_NET 80 (msg: "NMAP scan SYN"; flags:S,12; ack:0; threshold: type both, track by_dst, count 1, #seconds 60; reference:arachnids,27; GID:1; sid:10000002; rev:001; classtype: attempted-recon;)
+
+alert tcp $EXTERNAL_NET any -> $HOME_NET [21,22,80] (msg: "NMAP scan FIN"; flow:stateless; flags:F,12; ack:0; threshold: type both, track by_dst, count 3, seconds 10; reference:arachnids,27; GID:111; sid:10; rev:001; classtype:attempted-recon;)
+
+alert tcp $EXTERNAL_NET any -> $HOME_NET [21,22,80] (msg: "SCAN nmap XMAS"; flow:stateless; flags:FPU,12; threshold: type both, track by_dst, count 3, seconds 10; reference:arachnids,30; classtype:attempted-recon; sid:1228; rev:7;)
+
+#alert tcp $HOME_NET 21 -> $EXTERNAL_NET any (msg: "FTP access attempt"; content:"530 Login incorrect"; nocase; flow:from_server,established; classtype:attempted-admin; GID:1; SID:10000004; rev:001;)
+
+#alert tcp $EXTERNAL_NET any -> $HOME_NET 21 (msg: "FTP root user access attempt"; content:"USER root"; nocase; GID:1; SID:10000005;rev:001; classtype:attempted-admin;)
+
+#alert tcp $EXTERNAL_NET any -> $HOME_NET 21 (msg: "FTP anonymous access attempt"; content:"USER anonymous"; nocase; GID:1; SID:10000006; rev:001; classtype:attempted-admin;)
+
+#alert tcp $EXTERNAL_NET any -> $HOME_NET 22 (msg: "SSH login attempt"; flow:to_server; flags:S; threshold:type threshold, track by_src, count 4, seconds 60; metadata:service ssh; classtype:misc-activity; GID:1; sid:10000007; rev:001;)
+
+#alert tcp $EXTERNAL_NET any -> $HOME_NET 80 (flags:S; msg: "DdoS Detected"; flow:stateless; threshold: type both, track by_dst, count 70, seconds 10; classtype:bad-unknown; GID:1; sid:10000008; rev:001;)
+
+alert udp $EXTERNAL_NET any -> $HOME_NET 80 (msg: "DdoS UDP"; flow:stateless; threshold:type both,track by_dst, count 70, seconds 10; classtype:bad-unknown; GID:116; sid:433; rev:001;)
+
